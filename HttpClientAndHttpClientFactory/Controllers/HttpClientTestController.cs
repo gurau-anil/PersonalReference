@@ -179,6 +179,28 @@ namespace HttpClientAndHttpClientFactory.Controllers
             }
         }
 
+        [HttpDelete]
+        [Route("delete-data/{id:int}")]
+        public async Task<IActionResult> DeleteData(int id)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    PrepareHttpClient(client);
+
+                    HttpResponseMessage response = await client.DeleteAsync($"posts/{id}");
+                    response.EnsureSuccessStatusCode();
+
+                    return Ok();
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(500, $"Request error: {e.Message}");
+            }
+        }
+
 
         private void PrepareHttpClient(HttpClient client)
         {
