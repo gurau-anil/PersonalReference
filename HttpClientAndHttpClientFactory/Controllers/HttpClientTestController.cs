@@ -61,10 +61,40 @@ namespace HttpClientAndHttpClientFactory.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("get-data/{id:int}")]
+        [Produces(typeof(PostModel))]
+        public async Task<IActionResult> GetDataById(int id)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    PrepareHttpClient(client);
+
+                    //this custom header is specific to this request
+                    client.DefaultRequestHeaders.Add("Custom-Header", "value");
+
+                    HttpResponseMessage response = await client.GetAsync($"posts/{id}");
+                    response.EnsureSuccessStatusCode();
+
+                    //Reading Raw Response Data
+                    string responseData = await response.Content.ReadAsStringAsync();
+
+                    return Ok(JsonConvert.DeserializeObject<PostModel>(responseData));
+                }
+
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(500, $"Request error: {e.Message}");
+            }
+        }
+
         [HttpPost]
         [Route("post-data")]
         [Produces(typeof(PostModel))]
-        public async Task<IActionResult> PostData(PostAddModel model)
+        public async Task<IActionResult> PostData([FromBody] PostAddModel model)
         {
             try
             {
@@ -114,6 +144,33 @@ namespace HttpClientAndHttpClientFactory.Controllers
 
                     HttpResponseMessage response = await client.PostAsync("1738363049419-8408013498410", content);
                     return response.IsSuccessStatusCode? Ok(new { Message = "File uploaded successfully" }) : StatusCode((int)response.StatusCode, "Failed to upload file.");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(500, $"Request error: {e.Message}");
+            }
+        }
+
+        [HttpPut]
+        [Route("update-data/{id:int}")]
+        [Produces(typeof(PostModel))]
+        public async Task<IActionResult> UpdateData(int id, [FromBody] PostUpdateModel model)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    PrepareHttpClient(client);
+
+                    StringContent jsonContent = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                    //This is just a mock, first we need to check if the post with provided id exists.
+                    HttpResponseMessage response = await client.PutAsync($"posts/{id}", jsonContent);
+                    response.EnsureSuccessStatusCode();
+
+                    string responseData = await response.Content.ReadAsStringAsync();
+
+                    return Ok(JsonConvert.DeserializeObject<PostModel>(responseData));
                 }
             }
             catch (HttpRequestException e)

@@ -15,4 +15,8 @@
     public class PostAddModel : BaseModel
     {
     }
+
+    public class PostUpdateModel : PostModel
+    {
+    }
 }
