@@ -1,6 +1,8 @@
 using System.Net.Http.Headers;
+using System.Text;
 using HttpClientAndHttpClientFactory.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -27,9 +29,9 @@ namespace HttpClientAndHttpClientFactory.Controllers
         }
 
         [HttpGet(Name = "get-data")]
+        [Produces(typeof(IEnumerable<PostModel>))]
         public async Task<IActionResult> GetData()
         {
-
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -49,9 +51,36 @@ namespace HttpClientAndHttpClientFactory.Controllers
                     //Reading Raw Response Data
                     string responseData = await response.Content.ReadAsStringAsync();
                     
-                    return Ok(JsonConvert.DeserializeObject<List<PostModel>>(responseData));
+                    return Ok(JsonConvert.DeserializeObject<IEnumerable<PostModel>>(responseData));
                 }
 
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(500, $"Request error: {e.Message}");
+            }
+        }
+
+        [HttpPost]
+        [Route("post-data")]
+        [Produces(typeof(PostModel))]
+        public async Task<IActionResult> PostData(PostAddModel model)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    PrepareHttpClient(client);
+
+                    StringContent jsonContent = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PostAsync("posts", jsonContent);
+                    response.EnsureSuccessStatusCode();
+
+                    string responseData = await response.Content.ReadAsStringAsync();
+
+                    return Ok(JsonConvert.DeserializeObject<PostModel>(responseData));
+                }
             }
             catch (HttpRequestException e)
             {
