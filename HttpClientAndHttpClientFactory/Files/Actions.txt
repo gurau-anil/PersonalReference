@@ -1,0 +1,11 @@
+﻿1.Configure AppSetting
+
+
+Instead of relying on hardcoded configurations, we can use a strongly-typed approach, allowing us to benefit from the properties' type safety.
+
+1. Create AppSetting Model
+
+2. Configure AppSetting in Program.cs as { builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings")); }
+
+3. Inject the ApiSetting configuration in the constrructor as { constructor(IOptions<ApiSettings> apiSettings)}
+

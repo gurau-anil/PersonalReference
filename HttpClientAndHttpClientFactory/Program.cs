@@ -1,6 +1,13 @@
+using HttpClientAndHttpClientFactory.Models;
+using Microsoft.Extensions.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+//This configuration helps us to inject AppSetting in the constructor as "IOptions<ApiSettings> apiSettings"
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
