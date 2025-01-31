@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace HttpClientAndHttpClientFactory.Models
+﻿namespace HttpClientAndHttpClientFactory.Models
 {
     public class BaseModel
     {

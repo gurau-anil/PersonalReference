@@ -1,8 +1,8 @@
+using System;
 using System.Net.Http.Headers;
 using System.Text;
 using HttpClientAndHttpClientFactory.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -80,6 +80,40 @@ namespace HttpClientAndHttpClientFactory.Controllers
                     string responseData = await response.Content.ReadAsStringAsync();
 
                     return Ok(JsonConvert.DeserializeObject<PostModel>(responseData));
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(500, $"Request error: {e.Message}");
+            }
+        }
+
+        [HttpPost]
+        [Route("post-file-data")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PostFileData(IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest("No file uploaded.");
+                }
+
+                MultipartFormDataContent content = new MultipartFormDataContent();
+
+                // Add the file to form data
+                StreamContent fileContent = new StreamContent(file.OpenReadStream());
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+                content.Add(fileContent, "file", file.FileName);
+
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://www.postb.in");
+
+                    HttpResponseMessage response = await client.PostAsync("1738363049419-8408013498410", content);
+                    return response.IsSuccessStatusCode? Ok(new { Message = "File uploaded successfully" }) : StatusCode((int)response.StatusCode, "Failed to upload file.");
                 }
             }
             catch (HttpRequestException e)
