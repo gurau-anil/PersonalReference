@@ -2,9 +2,9 @@
 
 namespace HttpClientAndHttpClientFactory.Services.Interface
 {
-    public interface IThirdPartyClientApiService
+    public interface IApiService
     {
-        Task<IEnumerable<PostModel>> GetDataAsync();
+        Task<string> GetDataAsync();
         Task<PostModel> GetDataByIdAsync(int id);
         Task<PostModel> PostDataAsync(PostAddModel model);
         Task PostFileDataAsync(IFormFile file);

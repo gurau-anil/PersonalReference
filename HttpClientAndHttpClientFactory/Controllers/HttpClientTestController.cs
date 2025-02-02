@@ -2,6 +2,7 @@ using System;
 using System.Net.Http.Headers;
 using System.Text;
 using HttpClientAndHttpClientFactory.Models;
+using HttpClientAndHttpClientFactory.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -13,11 +14,12 @@ namespace HttpClientAndHttpClientFactory.Controllers
     public class HttpClientTestController : ControllerBase
     {
         private readonly ILogger<HttpClientTestController> _logger;
+        private readonly IPostService _postService;
         private readonly ApiSettings _apiSettings;
 
         private readonly string apiUrl;
         private readonly string apiKey;
-        public HttpClientTestController(ILogger<HttpClientTestController> logger, IOptions<ApiSettings> apiSettings)
+        public HttpClientTestController(ILogger<HttpClientTestController> logger, IOptions<ApiSettings> apiSettings, IPostService postService)
         {
             _logger = logger;
             _apiSettings = apiSettings.Value;
@@ -26,6 +28,7 @@ namespace HttpClientAndHttpClientFactory.Controllers
             //Just a Mock Api
             apiUrl = $"{_apiSettings.BaseUrl}/posts";
             apiKey = _apiSettings.ApiKey;
+            _postService = postService;
         }
 
         [HttpGet(Name = "get-data")]
@@ -34,25 +37,26 @@ namespace HttpClientAndHttpClientFactory.Controllers
         {
             try
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    PrepareHttpClient(client);
+                return Ok(await _postService.GetDataAsync());
+                //using (HttpClient client = new HttpClient())
+                //{
+                //    PrepareHttpClient(client);
 
-                    //this custom header is specific to this request
-                    client.DefaultRequestHeaders.Add("Custom-Header", "value");
+                //    //this custom header is specific to this request
+                //    client.DefaultRequestHeaders.Add("Custom-Header", "value");
 
 
-                    //instead of passing full address like this, we can set Base address and pass only the remaining path
-                    //HttpResponseMessage response = await client.GetAsync(apiUrl);
+                //    //instead of passing full address like this, we can set Base address and pass only the remaining path
+                //    //HttpResponseMessage response = await client.GetAsync(apiUrl);
 
-                    HttpResponseMessage response = await client.GetAsync("posts");
-                    response.EnsureSuccessStatusCode();
+                //    HttpResponseMessage response = await client.GetAsync("posts");
+                //    response.EnsureSuccessStatusCode();
 
-                    //Reading Raw Response Data
-                    string responseData = await response.Content.ReadAsStringAsync();
+                //    //Reading Raw Response Data
+                //    string responseData = await response.Content.ReadAsStringAsync();
                     
-                    return Ok(JsonConvert.DeserializeObject<IEnumerable<PostModel>>(responseData));
-                }
+                //    return Ok(JsonConvert.DeserializeObject<IEnumerable<PostModel>>(responseData));
+                //}
 
             }
             catch (HttpRequestException e)
