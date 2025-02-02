@@ -1,6 +1,7 @@
 ﻿using HttpClientAndHttpClientFactory.Enums;
 using HttpClientAndHttpClientFactory.Models;
 using HttpClientAndHttpClientFactory.Services.Interface;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace HttpClientAndHttpClientFactory.Services
@@ -8,14 +9,15 @@ namespace HttpClientAndHttpClientFactory.Services
     public class ApiService : IApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _config;
+        private readonly ApiSettings _apiSettings;
 
         public string apiUrl { get; set; }
 
-        public ApiService(HttpClient httpClient, IConfiguration config)
+        public ApiService(HttpClient httpClient, IOptions<ApiSettings> settings)
         {
             _httpClient = httpClient;
-            _config = config;
+            _apiSettings = settings.Value;
+            _httpClient.BaseAddress = new Uri(_apiSettings.BaseUrl);
         }
 
         public async Task<string> GetDataAsync()

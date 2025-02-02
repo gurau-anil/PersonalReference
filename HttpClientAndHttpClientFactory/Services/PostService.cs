@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
+﻿using System.Text;
 using HttpClientAndHttpClientFactory.Models;
 using Newtonsoft.Json;
 
