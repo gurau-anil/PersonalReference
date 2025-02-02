@@ -2,8 +2,6 @@ using System.Net.Http.Headers;
 using HttpClientAndHttpClientFactory.Models;
 using HttpClientAndHttpClientFactory.Services;
 using HttpClientAndHttpClientFactory.Services.Interface;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

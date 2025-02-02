@@ -1,11 +1,6 @@
-using System;
-using System.Net.Http.Headers;
-using System.Text;
 using HttpClientAndHttpClientFactory.Models;
 using HttpClientAndHttpClientFactory.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace HttpClientAndHttpClientFactory.Controllers
 {
@@ -15,19 +10,9 @@ namespace HttpClientAndHttpClientFactory.Controllers
     {
         private readonly ILogger<HttpClientFactoryTestController> _logger;
         private readonly IPostService _postService;
-        private readonly ApiSettings _apiSettings;
-
-        private readonly string apiUrl;
-        private readonly string apiKey;
-        public HttpClientFactoryTestController(ILogger<HttpClientFactoryTestController> logger, IOptions<ApiSettings> apiSettings, IPostService postService)
+        public HttpClientFactoryTestController(ILogger<HttpClientFactoryTestController> logger, IPostService postService)
         {
             _logger = logger;
-            _apiSettings = apiSettings.Value;
-
-
-            //Just a Mock Api
-            apiUrl = $"{_apiSettings.BaseUrl}/posts";
-            apiKey = _apiSettings.ApiKey;
             _postService = postService;
         }
 
@@ -36,16 +21,67 @@ namespace HttpClientAndHttpClientFactory.Controllers
         [Produces(typeof(IEnumerable<PostModel>))]
         public async Task<IActionResult> GetData()
         {
+
+            return await ResponseWrapperAsync(async () =>
+            {
+                return await _postService.GetDataAsync();
+            });
+        }
+
+        [HttpGet]
+        [Route("get-data/{id:int}")]
+        [Produces(typeof(PostModel))]
+        public async Task<IActionResult> GetDataById(int id)
+        {
+            return await ResponseWrapperAsync(async () =>
+            {
+                return await _postService.GetDataByIdAsync(id);
+            });
+        }
+
+        [HttpPost]
+        [Route("post-data")]
+        [Produces(typeof(PostModel))]
+        public async Task<IActionResult> PostData([FromBody] PostAddModel model)
+        {
+            return await ResponseWrapperAsync(async () =>
+            {
+                return await _postService.PostDataAsync(model);
+            });
+        }
+
+        [HttpPut]
+        [Route("update-data/{id:int}")]
+        [Produces(typeof(PostModel))]
+        public async Task<IActionResult> UpdateData(int id, [FromBody] PostUpdateModel model)
+        {
+            return await ResponseWrapperAsync(async () =>
+            {
+                return await _postService.UpdateDataAsync(id, model);
+            });
+        }
+
+        [HttpDelete]
+        [Route("delete-data/{id:int}")]
+        public async Task<IActionResult> DeleteData(int id)
+        {
+            return await ResponseWrapperAsync(async () =>
+            {
+                return await _postService.DeleteDataAsync(id);
+            });
+        }
+
+
+        private async Task<IActionResult> ResponseWrapperAsync(Func<Task<object>> func)
+        {
             try
             {
-                return Ok(await _postService.GetDataAsync());
+                return Ok(await func.Invoke());
             }
             catch (HttpRequestException e)
             {
                 return StatusCode(500, $"Request error: {e.Message}");
             }
         }
-
-        
     }
 }
