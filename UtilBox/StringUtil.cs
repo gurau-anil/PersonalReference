@@ -1,11 +1,11 @@
 ﻿
 using System.Text.RegularExpressions;
 
-namespace UtilBox.StringUtils
+namespace UtilBox
 {
-    public static class StringHelper
+    public class StringUtil
     {
-        public static string GenerateRandomString(int length, bool includeDigits = true, bool includeSpecialChars = false)
+        public string GenerateRandomString(int length, bool includeDigits = true, bool includeSpecialChars = false)
         {
             const string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
             const string digits = "0123456789";
@@ -19,36 +19,29 @@ namespace UtilBox.StringUtils
             return new string(Enumerable.Range(0, length).Select(_ => chars[rand.Next(chars.Length)]).ToArray());
         }
 
-    }
-
-
-    public static class StringExtension
-    {
-        public static int WordCount(this string input)
+        public int WordCount(string input)
         {
             var matches = Regex.Matches(input, @"\S+");
             return matches.Count;
         }
 
-        public static string RemoveWhiteSpaces(this string input)
+        public string RemoveWhiteSpaces(string input)
         {
             return Regex.Replace(input, @"\s+", " ");
         }
 
-        public static string CapitalizeFirstLetter(this string input)
+        public static string CapitalizeFirstLetter(string input)
         {
-            return string.IsNullOrEmpty(input) ? input : char.ToUpper(input[0]) + input.Substring(1);
+            return string.IsNullOrEmpty(input)? input : char.ToUpper(input[0]) + input.Substring(1);
         }
 
-        public static string ToSentenceCase(this string input)
+        public string ToSentenceCase(string input)
         {
             return string.IsNullOrEmpty(input) ? input : input.Substring(0, 1).ToUpper() + input.Substring(1).ToLower();
         }
 
-        public static bool CompareWith(this string input, string compareWith, bool ignoreCase = false)
-        {
-            return ignoreCase ? string.Equals(input, compareWith, StringComparison.OrdinalIgnoreCase) : string.Equals(input, compareWith);
-        }
 
     }
+
+
 }
