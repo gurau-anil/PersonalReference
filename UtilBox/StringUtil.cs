@@ -30,11 +30,15 @@ namespace UtilBox
             return Regex.Replace(input, @"\s+", " ");
         }
 
-        //public string ToSentenceCase(string input)
-        //{
-        //    if (string.IsNullOrEmpty(input)) return input;
-        //    return input.Substring(0, 1).ToUpper() + input.Substring(1).ToLower();
-        //}
+        public static string CapitalizeFirstLetter(string input)
+        {
+            return string.IsNullOrEmpty(input)? input : char.ToUpper(input[0]) + input.Substring(1);
+        }
+
+        public string ToSentenceCase(string input)
+        {
+            return string.IsNullOrEmpty(input) ? input : input.Substring(0, 1).ToUpper() + input.Substring(1).ToLower();
+        }
 
 
     }
