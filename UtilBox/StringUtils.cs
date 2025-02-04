@@ -130,16 +130,35 @@ namespace UtilBox.StringUtils
             return builder.ToString();
         }
 
+        
+
         public static string MaskPhoneNumber(this string phoneNumber)
         {
-            int index = phoneNumber.Length - 4;
-            string lastFour = phoneNumber.Substring(index);
-            return Regex.Replace(phoneNumber.Substring(0, index), @"\d","x") + lastFour;
+            return phoneNumber.maskExceptLast(4);
+        }
+
+        public static string MaskCreditCard(this string cardNumber)
+        {
+            return cardNumber.maskExceptLast(4);
+        }
+
+        public static string MaskSSN(this string ssn)
+        {
+            return ssn.maskExceptLast(4);
         }
 
         public static string FormatAndMaskPhoneNumber(this string phoneNumber)
         {
             return MaskPhoneNumber(phoneNumber.FormatPhoneNumber());
         }
+
+        private static string maskExceptLast(this string input, int length)
+        {
+            int index = input.Length - length;
+            string lastChars = input.Substring(index);
+            return Regex.Replace(input.Substring(0, index), @"\d", "x") + lastChars;
+        }
+
+        
     }
 }
