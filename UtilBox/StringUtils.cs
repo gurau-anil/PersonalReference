@@ -1,4 +1,5 @@
 ﻿
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace UtilBox.StringUtils
@@ -19,6 +20,8 @@ namespace UtilBox.StringUtils
             return new string(Enumerable.Range(0, length).Select(_ => chars[rand.Next(chars.Length)]).ToArray());
         }
 
+
+        
     }
 
 
@@ -48,6 +51,18 @@ namespace UtilBox.StringUtils
         public static bool CompareWith(this string input, string compareWith, bool ignoreCase = false)
         {
             return ignoreCase ? string.Equals(input, compareWith, StringComparison.OrdinalIgnoreCase) : string.Equals(input, compareWith);
+        }
+
+        public static string ConvertToBase64(this string input)
+        {
+            byte[] byteArray = Encoding.UTF8.GetBytes(input);
+            return Convert.ToBase64String(byteArray);
+        }
+
+        public static string ConvertFromBase64(this string base64Encoded)
+        {
+            byte[] byteArray = Convert.FromBase64String(base64Encoded);
+            return Encoding.UTF8.GetString(byteArray);
         }
 
     }
