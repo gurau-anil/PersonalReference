@@ -82,6 +82,11 @@ namespace UtilBox.StringUtils
             return Regex.Replace(input, @"\s+", " ");
         }
 
+        public static string RemoveSpecialCharacters(this string input)
+        {
+            // removes characters other than alpabets, numbers and space
+            return Regex.Replace(input, "[^a-zA-Z0-9 ]", "");
+        }
         public static string CapitalizeFirstLetter(this string input)
         {
             return string.IsNullOrEmpty(input) ? input : char.ToUpper(input[0]) + input.Substring(1);
@@ -109,6 +114,7 @@ namespace UtilBox.StringUtils
             return Encoding.UTF8.GetString(byteArray);
         }
 
+        #region formatting
         public static string Mask(this string input, char maskCharacter='x')
         {
             if (string.IsNullOrEmpty(input) || input.Length < 4)
@@ -131,7 +137,6 @@ namespace UtilBox.StringUtils
         }
 
         
-
         public static string MaskPhoneNumber(this string phoneNumber)
         {
             return phoneNumber.maskExceptLast(4);
@@ -152,6 +157,17 @@ namespace UtilBox.StringUtils
             return MaskPhoneNumber(phoneNumber.FormatPhoneNumber());
         }
 
+        #endregion
+
+        public static string TruncateWithEllipsis(this string input, int maxLength)
+        {
+            if (string.IsNullOrEmpty(input) || maxLength <= 3)
+                return input;
+
+            return input.Length > maxLength ? input.Substring(0, maxLength - 3) + "..." : input;
+        }
+
+        #region private
         private static string maskExceptLast(this string input, int length)
         {
             int index = input.Length - length;
@@ -159,6 +175,6 @@ namespace UtilBox.StringUtils
             return Regex.Replace(input.Substring(0, index), @"\d", "x") + lastChars;
         }
 
-        
+        #endregion
     }
 }
